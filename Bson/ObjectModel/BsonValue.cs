@@ -19,6 +19,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml;
+using System.Dynamic;
 
 using MongoDB.Bson.IO;
 using MongoDB.Bson.Serialization;
@@ -29,7 +30,7 @@ namespace MongoDB.Bson
     /// Represents a BSON value (this is an abstract class, see the various subclasses).
     /// </summary>
     [Serializable]
-    public abstract class BsonValue : IComparable<BsonValue>, IConvertible, IEquatable<BsonValue>
+    public abstract class BsonValue : /*New*/ DynamicObject, /*EndNew*/ IComparable<BsonValue>, IConvertible, IEquatable<BsonValue>
     {
         // private static fields
         private static Dictionary<BsonType, int> __bsonTypeSortOrder = new Dictionary<BsonType, int>

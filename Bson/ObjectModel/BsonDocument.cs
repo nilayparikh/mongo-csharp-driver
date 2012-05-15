@@ -21,6 +21,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml;
+using System.Dynamic;
 
 using MongoDB.Bson.IO;
 using MongoDB.Bson.Serialization;
@@ -1364,6 +1365,44 @@ namespace MongoDB.Bson
         IEnumerator IEnumerable.GetEnumerator()
         {
             return _elements.GetEnumerator();
+        }
+
+        /* Support dynamic */
+        public override bool TryDeleteMember(DeleteMemberBinder binder)
+        {
+            if (binder == null)
+                throw new ArgumentNullException("binder");
+            if (Contains(binder.Name))
+            {
+                Remove(binder.Name);
+                return true;
+            }
+            return false;
+        }
+
+        public override bool TryGetMember(GetMemberBinder binder, out object result)
+        {
+            BsonValue value;
+            if (TryGetValue(binder.Name, out value))
+            {
+                result = value;
+                return true;
+            }
+            result = null;
+            return true;
+        }
+
+        public override bool TrySetMember(SetMemberBinder binder, object value)
+        {
+            if (binder == null)
+                throw new ArgumentNullException("binder");
+            Set(binder.Name, BsonValue.Create(value));
+            return true;
+        }
+
+        public override IEnumerable<string> GetDynamicMemberNames()
+        {
+            return _indexes.Keys;
         }
     }
 }
